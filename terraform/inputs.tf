@@ -16,3 +16,8 @@ variable "master_instance_type" {
 #Slaves
 variable "slave_ami" {}
 variable "slave_instance_type" {}
+
+# Config Management
+variable "permitted_ips" {}
+variable "ssh_user_ca_publickey" {}
+variable "git_private_key_b64" {}

@@ -11,27 +11,50 @@ Terraform Module to Install and manage a Jenkins Server
 ## Usage
 
 ```
+provider "aws" {
+  region = "eu-west-1"
+}
+
+data "terraform_remote_state" "network" {
+  backend = "s3"
+
+  config {
+    bucket = "gg-remotestate"
+    key    = "network/dev/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
+data "aws_ami" "centos_7" {
+  most_recent = true
+
+  filter {
+    name   = "product-code"
+    values = ["aw0evgkw8e5c1q413zgy5pjce"]
+  }
+}
 
 module "jenkins" {
-  source "git@github.com:serene-wozniak/terraform-module-jenkins.git/terraform"
+  source = "git@github.com:serene-wozniak/terraform-module-jenkins.git//terraform"
 
   # Networking
-  public_subnet =
-  private_subnet =
-  vpc_id =
+  public_subnet  = "${data.terraform_remote_state.network.subnet-a-id}"
+  private_subnet = "${data.terraform_remote_state.network.subnet-b-id}"
+  vpc_id         = "${data.terraform_remote_state.network.vpc-id}"
 
   #To Distinguish between Jenkins Environments
   jenkins_name = "test-cluster"
 
-  slaves =  #Count of number of slaves
+  slaves = "3" #Count of number of slaves
 
   #Master
-  master_ami = "ami-aaaaa"
+  master_ami = "${data.aws_ami.centos_7.id}"
 
   master_instance_type = "m3.medium"
 
   #Slaves
-  slave_ami = "ami-aaaaa"
+  slave_ami           = "${data.aws_ami.centos_7.id}"
   slave_instance_type = "m3.medium"
 }
+
 ```
