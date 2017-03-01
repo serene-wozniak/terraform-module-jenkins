@@ -22,7 +22,7 @@
         remote_src=True
 
 - name: Bypass - initialAdminPassword
-  shell: mv /var/lib/jenkins/secrets/initialAdminPassword /root
+  shell: mv /var/lib/jenkins/secrets/initialAdminPassword /root || echo "Nothing to move"
   notify:
     - restart jenkins
 
