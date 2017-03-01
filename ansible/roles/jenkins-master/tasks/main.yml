@@ -1,4 +1,28 @@
+- name: Add Jenkins repository
+  yum_repository:
+    name: Jenkins-stable
+    description:  Jenkins Stable
+    baseurl: http://pkg.jenkins.io/redhat-stable
+    gpgkey: http://pkg.jenkins-ci.org/redhat-stable/jenkins-ci.org.key
+
 - name: Install Jenkins
   yum:
-    name: Jenkins
+    name: jenkins
     state: latest
+
+- name: Bypass - jenkins.install.InstallUtil.lastExecVersion
+  copy: src=/var/lib/jenkins/jenkins.install.UpgradeWizard.state
+        dest=/var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion
+        owner=jenkins
+        group=jenkins
+        remote_src=True
+
+ - name: Bypass - initialAdminPassword
+    shell: mv /var/lib/jenkins/secrets/initialAdminPassword /root
+    notify:
+      - restart jenkins
+
+- name: Set up security settings
+  template:
+    src: 'basic-security.groovy'
+    dest: /var/lib/jenkins/init.groovy.d/basic-security.groovy
