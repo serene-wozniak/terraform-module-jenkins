@@ -1,7 +1,7 @@
 # Conditional example
 - name: Bootstrap
   hosts: all
-  tasks:
+  pre_tasks:
   - name: Gather facts
     ec2_facts:
 
