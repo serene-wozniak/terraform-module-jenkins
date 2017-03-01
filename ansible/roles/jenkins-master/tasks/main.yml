@@ -18,7 +18,7 @@
     state: latest
 
 - name: Start Jenkins
-  service: jenkins state=started
+  service: name=jenkins state=started
 
 - name: Make sure the groovy init scripts are setup
   file:
