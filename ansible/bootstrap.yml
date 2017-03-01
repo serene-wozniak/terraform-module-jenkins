@@ -1,5 +1,9 @@
 # Conditional example
 - name: Bootstrap
   hosts: all
+  tasks:
+  - name: Gather facts
+    ec2_facts:
+
   roles:
       - { role: jenkins-master, when: "ansible_local.bootstrap.ansible.role == 'jenkins-master'" }
