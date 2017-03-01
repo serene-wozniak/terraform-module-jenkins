@@ -1,1 +1,4 @@
 # Conditional example
+- name: Bootstrap
+  roles:
+      - "{{ansible_local.bootstrap.ansible.role}}"

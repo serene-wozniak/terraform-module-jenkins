@@ -1,0 +1,4 @@
+- name: Install Jenkins
+  yum:
+    name: Jenkins
+    state: latest
