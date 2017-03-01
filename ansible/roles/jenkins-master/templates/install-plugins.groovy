@@ -30,8 +30,3 @@ plugins.each {
   }
 }
 
-if (installed) {
-  logger.info("Plugins installed, initializing a restart!")
-  instance.save()
-  instance.doSafeRestart()
-}
