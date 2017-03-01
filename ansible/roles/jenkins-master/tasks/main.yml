@@ -21,7 +21,7 @@
         group=jenkins
         remote_src=True
 
- - name: Bypass - initialAdminPassword
+- name: Bypass - initialAdminPassword
     shell: mv /var/lib/jenkins/secrets/initialAdminPassword /root
     notify:
       - restart jenkins
