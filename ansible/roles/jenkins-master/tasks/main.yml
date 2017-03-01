@@ -1,3 +1,6 @@
+- name: Gather facts
+  ec2_facts:
+
 - name: Add Jenkins repository
   yum_repository:
     name: Jenkins-stable
@@ -14,6 +17,9 @@
     name: jenkins
     state: latest
 
+- name: Start Jenkins
+  service: jenkins state=started
+
 - name: Make sure the groovy init scripts are setup
   file:
     path: /var/lib/jenkins/init.groovy.d
@@ -29,12 +35,14 @@
         group=jenkins
         remote_src=True
 
-- name: Bypass - initialAdminPassword
-  shell: mv /var/lib/jenkins/secrets/initialAdminPassword /root || echo "Nothing to move"
-  notify:
-    - restart jenkins
-
 - name: Set up security settings
   template:
     src: 'basic-security.groovy'
     dest: /var/lib/jenkins/init.groovy.d/basic-security.groovy
+  notify:
+    - restart jenkins
+
+- name: Bypass - initialAdminPassword
+  shell: mv /var/lib/jenkins/secrets/initialAdminPassword /root || echo "Nothing to move"
+  notify:
+    - restart jenkins
