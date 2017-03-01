@@ -1,6 +1,6 @@
 ---
 dependencies:
-  - role: 'git+https://github.com/antoiner77/caddy-ansible.git,v2.0.2'
+  - role: caddy-ansible
     caddy_config: |
       {{ansible_ec2_public_hostname}}
       proxy / localhost:8080
