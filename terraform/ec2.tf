@@ -16,8 +16,8 @@ resource "aws_instance" "master" {
 }
 
 module "jenkins_master_bootstrap" {
-  source = "git@github.com:serene-wozniak/terraform-module-bootstrap.git//ansible_bootstrap"
-
+  source                = "git@github.com:serene-wozniak/terraform-module-bootstrap.git//ansible_bootstrap"
+  hostname              = "${var.jenkins_name}.${var.route53_domain}"
   ansible_source_repo   = "git@github.com:serene-wozniak/terraform-module-jenkins.git"
   ansible_role          = "jenkins_master"
   ssh_ca_publickey      = "${var.ssh_user_ca_publickey}"

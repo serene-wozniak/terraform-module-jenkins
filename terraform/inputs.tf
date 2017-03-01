@@ -3,7 +3,8 @@ variable "private_subnet" {}
 variable "vpc_id" {}
 
 variable "jenkins_name" {} #To Distinguish between Jenkins Environments
-
+variable "route53_zone_id" {}
+variable "route53_domain" {}
 variable "slaves" {} #Count of number of slaves
 
 #Master
