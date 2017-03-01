@@ -39,6 +39,13 @@
   notify:
     - restart jenkins
 
+- name: Set up security settings
+  template:
+    src: 'install-plugins.groovy'
+    dest: /var/lib/jenkins/init.groovy.d/install-plugins.groovy
+  notify:
+    - restart jenkins
+
 - name: Bypass - initialAdminPassword
   shell: mv /var/lib/jenkins/secrets/initialAdminPassword /root || echo "Nothing to move"
   notify:

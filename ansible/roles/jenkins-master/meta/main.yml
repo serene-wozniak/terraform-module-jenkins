@@ -3,5 +3,7 @@ dependencies:
   - role: caddy-ansible
     caddy_config: |
       {{ansible_nodename}}
-      proxy / localhost:8080
+      proxy / localhost:8080 {
+        transparent
+      }
       tls {{admin_email}}
