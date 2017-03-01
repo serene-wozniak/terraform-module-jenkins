@@ -12,27 +12,16 @@ resource "aws_instance" "master" {
     Role       = "Jenkins Master"
   }
 
-  user_data = "${data.template_cloudinit_config.master.rendered}"
+  user_data = "${module.jenkins_master_bootstrap.cloud_init_config}"
 }
 
-data "template_file" "ssh_config" {
-  template = "${file("${path.module}/data/ssh_config.tmpl.sh")}"
+module "jenkins_master_bootstrap" {
+  source = "git@github.com:serene-wozniak/terraform-module-bootstrap.git//ansible_bootstrap"
 
-  vars {
-    users_ca_publickey = "${var.ssh_user_ca_publickey}"
-    github_privatekey  = "${base64decode(var.git_private_key_b64)}"
-  }
-}
-
-data "template_cloudinit_config" "master" {
-  gzip          = true
-  base64_encode = true
-
-  # Setup hello world script to be called by the cloud-config
-  part {
-    content_type = "text/x-shellscript"
-    content      = "${data.template_file.ssh_config.rendered}"
-  }
+  ansible_source_repo   = "git@github.com:serene-wozniak/terraform-module-jenkins.git"
+  ansible_role          = "jenkins_master"
+  ssh_ca_publickey      = "${var.ssh_user_ca_publickey}"
+  github_ssh_privatekey = "${var.git_private_key}"
 }
 
 # Slaves
