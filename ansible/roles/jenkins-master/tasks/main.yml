@@ -14,6 +14,14 @@
     name: jenkins
     state: latest
 
+- name: Make sure the groovy init scripts are setup
+  file:
+    path: /var/lib/jenkins/init.groovy.d
+    state: directory
+    mode: 0755
+    owner: jenkins
+    group: jenkins
+
 - name: Bypass - jenkins.install.InstallUtil.lastExecVersion
   copy: src=/var/lib/jenkins/jenkins.install.UpgradeWizard.state
         dest=/var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion
