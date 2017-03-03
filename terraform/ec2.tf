@@ -7,12 +7,14 @@ resource "aws_instance" "master" {
   vpc_security_group_ids = ["${aws_security_group.master-access.id}"]
 
   tags {
-    Name       = "Jenkins-${var.jenkins_name}-Master"
+    Name       = "${var.jenkins_name}-master"
+    Domain     = "${var.route53_domain}"
     JenkinsEnv = "${var.jenkins_name}"
     Role       = "Jenkins Master"
   }
 
-  user_data = "${module.jenkins_master_bootstrap.cloud_init_config}"
+  iam_instance_profile = "${var.instance_profile_id}"
+  user_data            = "${module.jenkins_master_bootstrap.cloud_init_config}"
 }
 
 module "jenkins_master_bootstrap" {
@@ -26,15 +28,16 @@ module "jenkins_master_bootstrap" {
 
 # Slaves
 resource "aws_instance" "slaves" {
-  ami           = "${var.slave_ami}"
-  instance_type = "${var.slave_instance_type}"
-  count         = "${var.slaves}"
-  subnet_id     = "${var.private_subnet}"
-
+  ami                    = "${var.slave_ami}"
+  instance_type          = "${var.slave_instance_type}"
+  count                  = "${var.slaves}"
+  subnet_id              = "${var.private_subnet}"
+  iam_instance_profile   = "${var.instance_profile_id}"
   vpc_security_group_ids = ["${aws_security_group.master-access.id}"]
 
   tags {
-    Name       = "Jenkins-${var.jenkins_name}-slave-${format("%02d", count.index + 1)}"
+    Name       = "${var.jenkins_name}-jenkins-slave-${format("%02d", count.index + 1)}"
+    Domain     = "${var.route53_domain}"
     JenkinsEnv = "${var.jenkins_name}"
     Role       = "Jenkins Slave"
   }

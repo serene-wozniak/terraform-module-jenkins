@@ -18,6 +18,10 @@
 - name: Start Jenkins
   service: name=jenkins state=started
 
+- name: Wait for the wizard to try and start
+  wait_for:
+    path: /var/lib/jenkins/jenkins.install.UpgradeWizard.state
+
 - name: Make sure the groovy init scripts are setup
   file:
     path: /var/lib/jenkins/init.groovy.d

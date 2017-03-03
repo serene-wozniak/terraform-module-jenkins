@@ -9,6 +9,7 @@ variable "slaves" {} #Count of number of slaves
 
 #Master
 variable "master_ami" {}
+variable "instance_profile_id" {}
 
 variable "master_instance_type" {
   default = "m3.medium"
