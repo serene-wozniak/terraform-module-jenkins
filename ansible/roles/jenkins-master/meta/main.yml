@@ -1,9 +1,10 @@
 ---
 dependencies:
+  - role: vault-certs
   - role: caddy-ansible
     caddy_config: |
       {{ansible_nodename}}
       proxy / localhost:8080 {
         transparent
       }
-      tls {{admin_email}}
+      tls /etc/pki/tls/certs/{{hostname_cmd.stdout}}.pem /etc/pki/tls/private/{{hostname_cmd.stdout}}.pem

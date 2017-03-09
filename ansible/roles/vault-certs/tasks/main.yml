@@ -7,41 +7,52 @@
 - meta: flush_handlers
 
 - name: Get pks7 certificate
-  uri: http://169.254.169.254/latest/dynamic/instance-identity/pkcs7
+  uri:
+    url: http://169.254.169.254/latest/dynamic/instance-identity/pkcs7
     return_content: yes
+
   register: certificate_request
 
+- debug:
+    msg: "{{certificate_request.content}}"
 - name: Log the machine into vault
   uri:
     url: https://vault.aws.int.giffgaff.co.uk/v1/auth/aws-ec2/login
     method: POST
-    body: |
-        {
-          "role": "dev-role",
-          "pkcs7": "{{certificate_request.content}}"
-        }
+    body: "{\"role\":\"jenkins-server\", \"pkcs7\": \"{{certificate_request.content|replace('\n','')}}\", \"nonce\": \"5defbf9e-a8f9-3063-bdfc-54b7a42a1f95\"}"
     body_format: json
     return_content: yes
   register: vault_auth_request
 
-- name: Write Vault Token
-  file:
-    dest: /root/.vault-Token
-    content: "{{vault_auth_request.content|json_query('auth.client_token')}}"
 
+- name: Write Vault Token
+  copy:
+    dest: /root/.vault-token
+    content: "{{(vault_auth_request.content|from_json)['auth']['client_token']}}"
+
+- name: Get our actual hostname
+  shell: hostname -f
+  register: hostname_cmd
 - name: Request a server certificate
   uri:
-    url: https://vault.aws.int.giffgaff.co.uk/v1/pki/issue/aws-int-giffgaff-shortlived
+    headers:
+      X-Vault-Token: "{{(vault_auth_request.content|from_json)['auth']['client_token']}}"
+    url: https://vault.aws.int.giffgaff.co.uk/v1/pki/issue/aws-int-giffgaff-shortlived-server
     method: POST
     body: |
         {
-          "common_name": "{{ansible_hostname}}",
+          "common_name": "{{hostname_cmd.stdout}}",
         }
     body_format: json
     return_content: yes
   register: vault_cert_request
 
-- name: Write certificate request
-  file:
-    dest: /etc/pki/output.json
-    content: "{{vault_cert_request.content}}"
+- name: Write Keyfile
+  copy:
+    dest: /etc/pki/tls/private/{{hostname_cmd.stdout}}.pem
+    content: "{{(vault_cert_request.content | from_json)['data']['private_key']}}"
+
+- name: Write Certificate
+  copy:
+    dest: /etc/pki/tls/certs/{{hostname_cmd.stdout}}.pem
+    content: "{{(vault_cert_request.content | from_json)['data']['certificate']}}"
