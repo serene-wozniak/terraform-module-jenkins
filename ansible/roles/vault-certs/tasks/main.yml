@@ -1,0 +1,47 @@
+- name: Add Our Root CA
+  copy:
+    src: root-ca.crt
+    dest: /etc/pki/ca-trust/source/anchors/giffgaff.crt
+  notify: update-ca-trust
+
+- meta: flush_handlers
+
+- name: Get pks7 certificate
+  uri: http://169.254.169.254/latest/dynamic/instance-identity/pkcs7
+    return_content: yes
+  register: certificate_request
+
+- name: Log the machine into vault
+  uri:
+    url: https://vault.aws.int.giffgaff.co.uk/v1/auth/aws-ec2/login
+    method: POST
+    body: |
+        {
+          "role": "dev-role",
+          "pkcs7": "{{certificate_request.content}}"
+        }
+    body_format: json
+    return_content: yes
+  register: vault_auth_request
+
+- name: Write Vault Token
+  file:
+    dest: /root/.vault-Token
+    content: "{{vault_auth_request.content|json_query('auth.client_token')}}"
+
+- name: Request a server certificate
+  uri:
+    url: https://vault.aws.int.giffgaff.co.uk/v1/pki/issue/aws-int-giffgaff-shortlived
+    method: POST
+    body: |
+        {
+          "common_name": "{{ansible_hostname}}",
+        }
+    body_format: json
+    return_content: yes
+  register: vault_cert_request
+
+- name: Write certificate request
+  file:
+    dest: /etc/pki/output.json
+    content: "{{vault_cert_request.content}}"

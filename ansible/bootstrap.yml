@@ -7,3 +7,4 @@
 
   roles:
       - { role: jenkins-master, when: "ansible_local.bootstrap.ansible.role == 'jenkins-master'" }
+      - { role: jenkins-slave, when: "ansible_local.bootstrap.ansible.role == 'jenkins-slave'" }

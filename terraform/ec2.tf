@@ -3,7 +3,7 @@ resource "aws_instance" "master" {
   ami           = "${var.master_ami}"
   instance_type = "${var.master_instance_type}"
 
-  subnet_id              = "${var.public_subnet}"
+  subnet_id              = "${var.private_subnet}"
   vpc_security_group_ids = ["${aws_security_group.master-access.id}"]
 
   tags {
@@ -40,5 +40,17 @@ resource "aws_instance" "slaves" {
     Domain     = "${var.route53_domain}"
     JenkinsEnv = "${var.jenkins_name}"
     Role       = "Jenkins Slave"
+  }
+}
+
+module "jenkins_slave_bootstrap" {
+  source                = "git@github.com:serene-wozniak/terraform-module-bootstrap.git//ansible_bootstrap?ref=v0.0.1"
+  ansible_source_repo   = "git@github.com:serene-wozniak/terraform-module-jenkins.git"
+  ansible_role          = "jenkins-slave"
+  ssh_ca_publickey      = "${var.ssh_user_ca_publickey}"
+  github_ssh_privatekey = "${var.git_private_key}"
+
+  ansible_facts = {
+    jenkins_master = "${aws_instance.master.private_ip}"
   }
 }
