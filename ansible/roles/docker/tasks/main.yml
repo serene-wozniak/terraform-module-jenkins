@@ -1,0 +1,27 @@
+---
+
+# Using old Docker repo as OpenShift 1.4 doesn't like the newest docker-ce versions
+- name: Add Docker repository
+  yum_repository:
+    name: Docker
+    description: Docker
+    baseurl: https://yum.dockerproject.org/repo/main/centos/7/
+    gpgkey: https://yum.dockerproject.org/gpg
+
+- name: Install Docker binaries
+  yum:
+    name: "docker-engine-{{ docker_version }}"
+    state: installed
+  notify:
+  - Restart docker
+
+- name: Setup custom docker.service file
+  template:
+    src: "docker.service.j2"
+    dest: "/usr/lib/systemd/system/docker.service"
+    mode: 0644
+  notify:
+  - Reload systemd
+  - Restart docker
+
+- meta: flush_handlers

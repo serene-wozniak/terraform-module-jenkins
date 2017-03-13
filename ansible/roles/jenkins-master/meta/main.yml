@@ -1,6 +1,7 @@
 ---
 dependencies:
   - role: vault-certs
+  - role: docker
   - role: caddy-ansible
     caddy_config: |
       {{ansible_nodename}}
