@@ -2,3 +2,7 @@
 *.tfstate
 *.tfstate.backup
 *.tfvars
+.classpath
+.project
+.settings
+target
