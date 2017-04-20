@@ -4,8 +4,11 @@ dependencies:
   - role: docker
   - role: caddy-ansible
     caddy_config: |
-      {{ansible_nodename}}
-      proxy / localhost:8080 {
-        transparent
+      {{ansible_nodename}}:443 {
+        errors /var/log/caddy/errors.log
+        log /var/log/caddy/access.log
+        proxy / localhost:8080 {
+          transparent
+        }
+        tls /etc/pki/tls/certs/{{hostname_cmd.stdout}}.pem /etc/pki/tls/private/{{hostname_cmd.stdout}}.pem
       }
-      tls /etc/pki/tls/certs/{{hostname_cmd.stdout}}.pem /etc/pki/tls/private/{{hostname_cmd.stdout}}.pem
