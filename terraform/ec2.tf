@@ -36,7 +36,7 @@ resource "aws_instance" "slaves" {
   vpc_security_group_ids = ["${aws_security_group.master-access.id}"]
 
   tags {
-    Name       = "${var.jenkins_name}-jenkins-slave-${format("%02d", count.index + 1)}"
+    Name       = "${var.jenkins_name}-slave-${format("%02d", count.index + 1)}"
     Domain     = "${var.route53_domain}"
     JenkinsEnv = "${var.jenkins_name}"
     Role       = "Jenkins Slave"
