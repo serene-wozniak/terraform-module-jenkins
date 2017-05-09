@@ -41,6 +41,8 @@ resource "aws_instance" "slaves" {
     JenkinsEnv = "${var.jenkins_name}"
     Role       = "Jenkins Slave"
   }
+
+  user_data            = "${module.jenkins_slave_bootstrap.cloud_init_config}"
 }
 
 module "jenkins_slave_bootstrap" {

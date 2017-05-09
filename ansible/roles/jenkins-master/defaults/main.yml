@@ -54,6 +54,7 @@ jenkins_plugins: >
     icon-shim
     jackson2-api
     javadoc
+    job-dsl
     jquery-detached
     junit
     kubernetes
