@@ -58,4 +58,4 @@
   copy:
     dest: /etc/pki/tls/certs/{{hostname_cmd.stdout}}.pem
     content: "{{(vault_cert_request.content | from_json)['data']['certificate']}}"
-    notify: update-ca-trust
+  notify: update-ca-trust
