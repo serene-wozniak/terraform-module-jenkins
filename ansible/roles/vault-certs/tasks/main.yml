@@ -4,6 +4,8 @@
     dest: /etc/pki/ca-trust/source/anchors/giffgaff.crt
   notify: update-ca-trust
 
+- name: update-ca-trust
+  shell: update-ca-trust
 - meta: flush_handlers
 
 - name: Get pks7 certificate
@@ -56,3 +58,4 @@
   copy:
     dest: /etc/pki/tls/certs/{{hostname_cmd.stdout}}.pem
     content: "{{(vault_cert_request.content | from_json)['data']['certificate']}}"
+    notify: update-ca-trust

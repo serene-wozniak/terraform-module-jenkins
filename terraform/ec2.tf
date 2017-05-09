@@ -42,6 +42,7 @@ resource "aws_instance" "slaves" {
     Role       = "Jenkins Slave"
   }
 
+  iam_instance_profile = "${var.instance_profile_id}"
   user_data            = "${module.jenkins_slave_bootstrap.cloud_init_config}"
 }
 
